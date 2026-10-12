@@ -1,0 +1,513 @@
+=== P220 ===
+Needs safeguards
+
+=== P221 ===
+✓
+
+=== P222 ===
+IV. Proposed System Architecture
+
+=== P223 ===
+A. Overview
+
+=== P224 ===
+Nova is organised as a layered pipeline. A participant interacts naturally, by speaking and looking at the embodied virtual human rendered in Unity; no typed input is required. The Unity front end streams camera and microphone data, together with the current conversation state, to a Python backend/orchestrator. The backend runs speech-to-text, voice/acoustic processing, face analysis, eye/gaze analysis, and, where validated, camera-based rPPG. Each modality is converted into a compatible encoded representation and passed to a cross-modal Transformer fusion module, which produces (a) an assessment-oriented output, (b) a fused multimodal state for reinforcement learning, and (c) timestamped evidence for the research dashboard. A reinforcement-learning adaptive-question-selection policy consumes the fused state and dialogue history and selects the next question from a predefined, safe question bank; Unity then renders this question through the virtual human, and the cycle repeats.
+
+=== P225 ===
+B. Component Responsibilities
+
+=== P226 ===
+The camera supplies frames used for face, gaze, and (optionally) rPPG extraction; the microphone supplies audio used both for acoustic/voice feature extraction and for speech-to-text transcription. The resulting text, voice, face, gaze, and physiological features are each passed through a modality-specific encoder before fusion. The fusion Transformer is the main multimodal research model, and its output state feeds the RL policy, which is restricted to selecting from a finite, reviewed action space rather than generating unconstrained questions. The Python backend performs runtime orchestration between Unity and the trained models via an HTTP/WebSocket API, while the research dashboard consumes session logs to present timelines, modality traces, and longitudinal comparisons for research analysis — it is explicitly a research dashboard rather than a clinical or therapist-facing dashboard.
+
+=== P227 ===
+Table III.  Methodology / Algorithms Used in Our Project
+
+=== P228 ===
+Layer / Module
+
+=== P229 ===
+Technique / Algorithm
+
+=== P230 ===
+Purpose
+
+=== P231 ===
+Speech (ASR)
+
+=== P232 ===
+Speech-to-Text (e.g., Whisper)
+
+=== P233 ===
+Convert participant speech into text
+
+=== P234 ===
+Text (NLP)
+
+=== P235 ===
+Text embeddings / NLP (e.g., BERT)
+
+=== P236 ===
+Extract information from what the participant says
+
+=== P237 ===
+Voice / Audio
+
+=== P238 ===
+MFCC + acoustic features / pretrained speech models
+
+=== P239 ===
+Analyse how the participant speaks
+
+=== P240 ===
+Face Analysis
+
+=== P241 ===
+Facial landmarks / Action Units (e.g., OpenFace, MediaPipe)
+
+=== P242 ===
+Capture facial behavioural information
+
+=== P243 ===
+Eyes / Gaze
+
+=== P244 ===
+Gaze, blink, pupil features (e.g., MediaPipe Iris, GazeML)
+
+=== P245 ===
+Capture ocular behavioural signals
+
+=== P246 ===
+Physiological (Optional)
+
+=== P247 ===
+rPPG → HR/HRV estimation
+
+=== P248 ===
+Contactless physiological signal estimation
+
+=== P249 ===
+Unimodal ML
+
+=== P250 ===
+Classical ML / neural task heads
+
+=== P251 ===
+Establish individual modality baselines
+
+=== P252 ===
+Multimodal AI (Fusion)
+
+=== P253 ===
+Cross-modal Transformer
+
+=== P254 ===
+Learn relationships between all modalities
+
+=== P255 ===
+Adaptive Interaction (RL)
+
+=== P256 ===
+Reinforcement Learning (e.g., PPO / Thompson Sampling)
+
+=== P257 ===
+Select next question based on multimodal state
+
+=== P258 ===
+RL Action Space
+
+=== P259 ===
+Predefined safe question bank
+
+=== P260 ===
+Prevent unrestricted question generation
+
+=== P261 ===
+RL Reward Function
+
+=== P262 ===
+Information gain + topic coverage + engagement − penalties (repetition/irrelevance/safety)
+
+=== P263 ===
+Guide question selection
+
+=== P264 ===
+Embodied Interaction
+
+=== P265 ===
+Unity virtual human (e.g., Nova)
+
+=== P266 ===
+Provide conversational interface
+
+=== P267 ===
+Backend
+
+=== P268 ===
+Python API / service (FastAPI)
+
+=== P269 ===
+Connect ML models with Unity
+
+=== P270 ===
+Research Output
+
+=== P271 ===
+Dashboard + session timeline
+
+=== P272 ===
+Display multimodal traces, questions, responses
+
+=== P273 ===
+V. Detailed Comparison with SimSensei/Ellie
+
+=== P274 ===
+Because SimSensei/Ellie is architecturally the closest prior system to Nova, Table IV presents a fifteen-aspect side-by-side comparison. Both systems use an embodied virtual-human interface and perceive facial expressions, gaze, blinking, and voice characteristics. The principal differences are: (1) Nova replaces SimSensei's semi-structured, algorithmic question progression with reinforcement-learning-based adaptive questioning that still draws only from a safe, predefined question bank; (2) Nova adds an explicit cross-modal Transformer fusion architecture on top of modality-specific encoders, rather than a general multimodal-perception description; (3) Nova adds an optional contactless physiological channel (rPPG-derived heart rate/HRV) that is not specified in SimSensei; and (4) Nova's research outputs extend behavioural information to timestamped multimodal evidence, a full research dashboard, and longitudinal comparison across sessions.
+
+=== P275 ===
+Table IV.  Detailed Comparison – SimSensei/Ellie vs. Our System
+
+=== P276 ===
+Aspect
+
+=== P277 ===
+SimSensei / Ellie
+
+=== P278 ===
+Our System – Nova
+
+=== P279 ===
+Interface
+
+=== P280 ===
+Virtual human (Ellie)
+
+=== P281 ===
+Unity embodied virtual human (Nova)
+
+=== P282 ===
+Interview type
+
+=== P283 ===
+Semi-structured
+
+=== P284 ===
+Adaptive questioning (RL)
+
+=== P285 ===
+Modalities used
+
+=== P286 ===
+Speech, face, gaze, gestures, text
+
+=== P287 ===
+Speech, face, eyes, voice, text, (rPPG optional)
+
+=== P288 ===
+Fusion architecture
+
+=== P289 ===
+Multimodal perception (as described)
+
+=== P290 ===
+Explicit modality encoders + cross-modal Transformer
+
+=== P291 ===
+Reinforcement learning
+
+=== P292 ===
+Not used
+
+=== P293 ===
+Used for question selection
+
+=== P294 ===
+Question selection
+
+=== P295 ===
+Algorithmic / semi-structured
+
+=== P296 ===
+RL selects from safe predefined question bank
+
+=== P297 ===
+Assessment target
+
+=== P298 ===
+Psychological distress indicators
+
+=== P299 ===
+Multimodal PTSD/anxiety research assessment
+
+=== P300 ===
+Gestures & non-verbal behaviour
+
+=== P301 ===
+Yes (facial expressions, gaze, gestures, blinking, voice tone, pauses)
+
+=== P302 ===
+Yes (facial expressions, gaze, blink, head movement via avatar)
+
+=== P303 ===
+Speech & language analysis
+
+=== P304 ===
+Yes
+
+=== P305 ===
+Yes (ASR + NLP embeddings)
+
+=== P306 ===
+Ocular analysis
+
+=== P307 ===
+Yes (gaze, blinking)
+
+=== P308 ===
+Yes (gaze, blink, pupil features)
+
+=== P309 ===
+Voice / acoustic analysis
+
+=== P310 ===
+Yes (voice characteristics)
+
+=== P311 ===
+Yes (MFCC + acoustic features / pretrained models)
+
+=== P312 ===
+Physiological analysis
+
+=== P313 ===
+Not specified
+
+=== P314 ===
+Yes (rPPG → HR/HRV, optional)
+
+=== P315 ===
+Longitudinal analysis
+
+=== P316 ===
+Supported (previous information)
+
+=== P317 ===
+Yes (research dashboard + longitudinal comparison)
+
+=== P318 ===
+Research outputs
+
+=== P319 ===
+Behavioural information
+
+=== P320 ===
+Timestamped multimodal evidence + dashboard + analysis
+
+=== P321 ===
+Main focus
+
+=== P322 ===
+Automatic assessment of psychological distress
+
+=== P323 ===
+Multimodal assessment + adaptive interaction for mental-health research
+
+=== P324 ===
+VI. Key Differences from Previous Systems
+
+=== P325 ===
+Table V generalises the comparison across nine aspects, contrasting a synthesis of previous systems with Nova. Previous systems typically target conversation delivery, CBT content delivery, companionship, or single-modality signal analysis, using text with at most limited audio/visual input, rarely-used or limited fusion, scripted or rule-based adaptivity, and text-based or simple-avatar embodiment; assessment, where present, relies on questionnaires such as PHQ-9 or GAD-7, or text-based analysis, with limited real-time adaptation and variable safety control. Nova instead targets multimodal assessment together with adaptive questioning, uses face, eye, voice and text data (with optional rPPG), a cross-modal Transformer fusion model, reinforcement-learning-based real-time adaptation, an embodied Unity virtual human, predefined safe questions with explicit safety constraints and risk handling, and a research output comprising a dashboard, session timeline, multimodal traces, and longitudinal analysis.
+
+=== P326 ===
+Table V.  Our System vs. Previous Systems – Key Differences
+
+=== P327 ===
+Aspect
+
+=== P328 ===
+Previous Systems (General)
+
+=== P329 ===
+Our System (Nova)
+
+=== P330 ===
+Main focus
+
+=== P331 ===
+Conversation, CBT delivery, companionship, or single-modality signals
+
+=== P332 ===
+Multimodal assessment + adaptive questioning
+
+=== P333 ===
+Data used
+
+=== P334 ===
+Mostly text; some use limited audio/visual
+
+=== P335 ===
+Face + eyes + voice + speech-to-text (+ rPPG optional)
+
+=== P336 ===
+Fusion model
+
+=== P337 ===
+Rarely used or limited
+
+=== P338 ===
+Cross-modal Transformer
+
+=== P339 ===
+Adaptive interaction
+
+=== P340 ===
+Scripted, rule-based or style-based
+
+=== P341 ===
+Reinforcement learning (question selection)
+
+=== P342 ===
+Embodiment
+
+=== P343 ===
+Text-based or simple avatar (few systems)
+
+=== P344 ===
+Unity embodied virtual human (Nova)
+
+=== P345 ===
+Psychological assessment
+
+=== P346 ===
+Questionnaires (e.g., PHQ-9, GAD-7) or text-based analysis
+
+=== P347 ===
+Multimodal biomarker-based assessment (face, eye, voice, text, optional rPPG)
+
+=== P348 ===
+Real-time adaptation
+
+=== P349 ===
+Limited or not available
+
+=== P350 ===
+Dynamic question selection based on multimodal state
+
+=== P351 ===
+Safety control
+
+=== P352 ===
+Varies; often limited
+
+=== P353 ===
+Predefined safe questions + safety constraints + risk handling
+
+=== P354 ===
+Research output
+
+=== P355 ===
+Limited (basic outcomes)
+
+=== P356 ===
+Research dashboard + session timeline + multimodal traces + longitudinal analysis
+
+=== P357 ===
+VII. Methodology and Algorithms
+
+=== P358 ===
+Table III lists the technique or algorithm used in each layer/module of Nova and its purpose. The following subsections summarise the most important layers.
+
+=== P359 ===
+A. Perceptual Front End
+
+=== P360 ===
+Speech is transcribed with a pretrained automatic speech-recognition (ASR) model (e.g., Whisper) to obtain a timestamped transcript, from which text embeddings (e.g., BERT-family encoders) are derived; the participant is never required to type. Acoustic features (MFCCs and additional descriptors such as pitch, jitter, shimmer and HNR, optionally supplemented with pretrained speech representations such as Wav2Vec 2.0) characterise how the participant speaks. Facial behaviour is captured using validated facial-landmark/action-unit pipelines (e.g., OpenFace or MediaPipe), and ocular behaviour — gaze direction, blink rate, and pupil features — is extracted from the same or a dedicated pipeline (e.g., MediaPipe Iris, GazeML), and is kept as a distinct modality even where derived from the same video stream. A contactless remote-photoplethysmography (rPPG) channel for heart-rate/HRV estimation is treated as optional and experimental: it is only included in the fusion model after its signal quality and failure rate have been validated on a sample of recordings, and is never assumed to be a ground-truth-grade physiological measurement.
+
+=== P361 ===
+B. Multimodal Fusion
+
+=== P362 ===
+Each modality is first passed through a modality-specific unimodal baseline (classical machine learning or a small neural task head) to establish an individual performance reference. The modalities are then aligned by participant and by conversational turn and passed into a cross-modal Transformer, which learns attention-based relationships between modalities rather than simple concatenation. A missing-modality policy and corresponding modality masks are defined prior to training so that the system degrades gracefully — rather than fabricating values — when a sensor is unavailable or of low quality.
+
+=== P363 ===
+C. Reinforcement-Learning Adaptive Questioning
+
+=== P364 ===
+The RL module is deliberately restricted to selecting the next question from a fixed, reviewed question bank; it is never permitted to generate unconstrained clinical questions. The environment is formulated as follows. The state is the fused multimodal representation together with the questions already asked, the topics already covered, and the current turn context. The action is the selection of one predefined question or question category. The transition is the participant's response, which yields a new multimodal/text state. The reward combines information gain, topic/symptom coverage, and engagement/response quality, with penalties for repetition, irrelevance, or safety violations:
+
+=== P365 ===
+R = w1·InfoGain + w2·TopicCoverage + w3·Engagement − w4·Repetition − w5·Irrelevance − w6·SafetyViolation      (1)
+
+=== P366 ===
+An episode corresponds to one complete research interview session, and the policy is trained (e.g., with PPO or Thompson Sampling) to learn which action is most useful in each state. This formulation is inspired by the adaptive-interaction-style architecture of Tamantini et al. [9], which uses a scalar valence-based reward and Thompson Sampling to modulate communication style; Nova redefines both the action space (assessment-question selection rather than communication style) and the reward (information gain and topic coverage rather than affective valence change), since a more positive facial or vocal response is not automatically a better assessment outcome.
+
+=== P367 ===
+D. Dataset, Labels, and Evaluation Metrics
+
+=== P368 ===
+The intended benchmark for offline model development is the DAIC-WOZ/Extended-DAIC (E-DAIC) corpus [10]–[12], obtained through the official access process, which provides audio, video, transcripts, questionnaire responses, and facial-feature data collected for the study of depression, anxiety and PTSD-related psychological distress. Because the commonly used AVEC 2017 DAIC-WOZ depression task uses PHQ-8-based labels, the exact target variable, task type (classification or regression), unit of prediction, positive-class definition, and train/development/test split must be documented before any model is described as an anxiety or PTSD classifier, and participant-level splitting is enforced throughout to prevent leakage. Primary evaluation metrics are AUROC and F1, together with precision, recall, accuracy and calibration measures where appropriate; the RL module is evaluated separately on information gain per turn, topic coverage, turns-to-coverage threshold, engagement proxies, cumulative reward, repetition rate and safety-violation rate, since AUROC/F1 do not characterise a question-selection policy.
+
+=== P369 ===
+VIII. Implementation Plan
+
+=== P370 ===
+The system is implemented as a staged research pipeline rather than as a single monolithic build, following the order: dataset acquisition and audit; exact target/label definition; participant-level splitting; unimodal baselines for voice, text, face, gaze and (if validated) rPPG; multimodal fusion and ablation (Face; Face+Voice; Face+Voice+Gaze; Face+Voice+Gaze+Text; and, only if quality checks pass, the full modality set including rPPG); early-fusion versus late-fusion versus cross-modal-Transformer comparison; construction of the RL environment, question bank and topic-coverage map; RL training and evaluation against a fixed-question baseline; construction of the research dashboard; exposure of the trained models through a FastAPI-based Python service; Unity integration; and a final end-to-end demonstration, followed by an ethics-approved human pilot only if institutional approval is obtained.
+
+=== P371 ===
+Unity integration itself follows an incremental ladder — from a scene in which the avatar speaks a pre-recorded line, through dummy API calls, live speech-to-text, single-modality inference, fused-model inference, and finally RL-selected questioning with full session logging and dashboard visualisation — so that integration defects are isolated one layer at a time rather than debugged inside a fully real-time system. Every turn is logged with a timestamp, session identifier, model version, selected action, data-quality flags, and outputs, and defined fallback behaviour is used whenever a sensor, model, or backend call fails (for example, masking a missing modality rather than fabricating a value, or selecting a safe predefined fallback question under RL uncertainty).
+
+=== P372 ===
+IX. Evaluation Protocol
+
+=== P373 ===
+Evaluation is separated into three tiers. The offline machine-learning benchmark trains and evaluates unimodal baselines and the fusion model once, on a locked held-out partition, reporting AUROC, F1, precision, recall, accuracy and, where feasible, confidence intervals or cross-fold variance. The RL simulation/offline experiment compares the trained adaptive-questioning policy against a fixed-question-sequence baseline under the same question bank and question budget, across multiple random seeds, on information gained per turn, topic/symptom coverage, turns to reach a coverage threshold, an engagement proxy, cumulative reward, question-repetition rate, and safety-violation rate. A human pilot, conducted only after institutional ethics approval and informed consent, uses pseudonymous identifiers, records system failures and sensor quality, analyses aggregate rather than individual results, and does not support any automated diagnostic claim. Published results from other systems are only reported as direct numerical comparisons when the dataset, label definition, split and metric are sufficiently aligned; otherwise they are reported as contextual background only.
+
+=== P374 ===
+X. Discussion and Limitations
+
+=== P375 ===
+Nova is explicitly framed as a research-assessment platform and not as a diagnostic or treatment system: computational features such as gaze avoidance, vocal instability, or an rPPG-derived heart-rate estimate are reported as evidence and quality-flagged model output, not as proof of a clinical condition. The reinforcement-learning component is restricted to a finite, reviewed question bank precisely to avoid unconstrained clinical questioning, and the researcher dashboard is deliberately distinguished from a clinical or therapist-facing dashboard. Key limitations include the dependence of rPPG on video quality and lighting, the general difficulty of applying benchmark performance from one dataset or label definition directly to another, and the requirement that any human-participant study obtain institutional ethics approval before mental-health-related data is collected.
+
+=== P376 ===
+XI. Conclusion and Future Work
+
+=== P377 ===
+This paper presented Nova, a multimodal, embodied research platform for objective PTSD and anxiety assessment support that combines cross-modal Transformer fusion of facial, ocular, vocal, linguistic and optional physiological signals with reinforcement-learning-based adaptive question selection from a safe, predefined question bank, and a researcher-facing dashboard with timestamped, longitudinal multimodal evidence. Compared against nine representative systems and reviews, Nova is distinguished by combining full multimodal fusion, adaptive questioning driven by reinforcement learning rather than scripted logic, and detailed research-output tooling. Future work includes completing the DAIC-WOZ/E-DAIC benchmark evaluation and ablation study, validating rPPG feasibility on the target hardware, extending the RL reward with additional safety constraints, and — subject to institutional ethics approval — conducting a small human-participant pilot study to assess engagement, usability and system reliability under realistic conditions.
+
+=== P378 ===
+References
+
+=== P379 ===
+[1] K. K. Fitzpatrick, A. Darcy, and M. Vierhile, "Delivering cognitive behavior therapy to young adults with symptoms of depression and anxiety using a fully automated conversational agent (Woebot): a randomized controlled trial," JMIR Mental Health, 2017.
+
+=== P380 ===
+[2] A. Joerin, M. Rauws, et al., "Psychological artificial intelligence service, Tess: Delivering on-demand support to patients and their caregivers," as reported in the associated literature survey.
+
+=== P381 ===
+[3] D. DeVault et al., "SimSensei Kiosk: A virtual human interviewer for healthcare decision support," in Proc. Int. Conf. Autonomous Agents and Multi-Agent Systems (AAMAS), 2014.
+
+=== P382 ===
+[4] M. Skjuve, A. Følstad, K. I. Fostervold, and P. B. Brandtzaeg, "My chatbot companion — a study of human–chatbot relationships," Int. J. Human-Computer Studies, 2021.
+
+=== P383 ===
+[5] Golubović et al., "Effect of virtual human appearance on user perception: an experimental survey," as reported in the associated literature survey.
+
+=== P384 ===
+[6] Li et al., "Effectiveness of AI-based conversational agents for mental health support: a systematic review and meta-analysis," as reported in the associated literature survey.
+
+=== P385 ===
+[7] Hang et al., "Effectiveness of AI conversational agents among young people: a systematic review and meta-analysis of randomized controlled trials," as reported in the associated literature survey.
+
+=== P386 ===
+[8] "Opportunities and challenges of AI chatbots in mental health: a literature review," as reported in the associated literature survey.
+
+=== P387 ===
+[9] R. Tamantini et al., "Adaptive interaction style modulation via reinforcement learning and prompted language generation," in Proc. Workshop on Social Robotics for Human-Centered Assistive and Rehabilitation AI (ICSR 2025), CEUR-WS Vol. 4067, 2025.
+
+=== P388 ===
+[10] University of Southern California Institute for Creative Technologies, "DAIC-WOZ database," [Online]. Available: https://dcapswoz.ict.usc.edu/
+
+=== P389 ===
+[11] University of Southern California Institute for Creative Technologies, "Extended DAIC (E-DAIC) database," [Online]. Available: https://dcapswoz.ict.usc.edu/extended-daic-database-download/
+
+=== P390 ===
+[12] "DAIC-WOZ AVEC 2017 depression sub-challenge documentation," [Online]. Available: https://dcapswoz.ict.usc.edu/wwwdaicwoz/DAICWOZDepression_Documentation_AVEC2017.pdf
+

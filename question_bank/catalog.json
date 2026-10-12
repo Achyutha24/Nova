@@ -1,0 +1,137 @@
+[
+  {
+    "question_id": "Q_RAP_01",
+    "text": "Hello, thank you for taking the time to speak with me today. How has your day been going so far?",
+    "topic": "rapport",
+    "difficulty": 1,
+    "follow_up_purpose": "Establish conversational rapport and baseline vocal/facial dynamics.",
+    "safety_classification": "standard",
+    "enabled": true
+  },
+  {
+    "question_id": "Q_RAP_02",
+    "text": "Before we dive in, could you tell me a little bit about what you typically like to do to unwind?",
+    "topic": "rapport",
+    "difficulty": 1,
+    "follow_up_purpose": "Elicit positive/neutral emotional baseline.",
+    "safety_classification": "standard",
+    "enabled": true
+  },
+  {
+    "question_id": "Q_SLP_01",
+    "text": "Could you tell me about your sleep lately? How well have you been resting?",
+    "topic": "sleep",
+    "difficulty": 1,
+    "follow_up_purpose": "Assess sleep disturbance, latency, and duration.",
+    "safety_classification": "standard",
+    "enabled": true
+  },
+  {
+    "question_id": "Q_SLP_02",
+    "text": "Do you find yourself waking up frequently during the night, or having vivid dreams that wake you up?",
+    "topic": "sleep",
+    "difficulty": 2,
+    "follow_up_purpose": "Probe nocturnal awakenings and distressing dreams.",
+    "safety_classification": "standard",
+    "enabled": true
+  },
+  {
+    "question_id": "Q_STR_01",
+    "text": "When you encounter a demanding or stressful situation recently, how does that usually feel for you?",
+    "topic": "stressful_event",
+    "difficulty": 2,
+    "follow_up_purpose": "Examine stress response and physiological reactivity indicators.",
+    "safety_classification": "standard",
+    "enabled": true
+  },
+  {
+    "question_id": "Q_STR_02",
+    "text": "Have there been particular memories or events from the past that have felt especially difficult to shake off?",
+    "topic": "stressful_event",
+    "difficulty": 3,
+    "follow_up_purpose": "Assess intrusive thoughts and traumatic recall markers.",
+    "safety_classification": "sensitive",
+    "enabled": true
+  },
+  {
+    "question_id": "Q_AVO_01",
+    "text": "Have you noticed yourself wanting to stay away from certain places, activities, or conversations that remind you of stressful times?",
+    "topic": "avoidance",
+    "difficulty": 2,
+    "follow_up_purpose": "Quantify cognitive and behavioral avoidance patterns.",
+    "safety_classification": "standard",
+    "enabled": true
+  },
+  {
+    "question_id": "Q_AVO_02",
+    "text": "Sometimes people feel emotionally distant or detached from others around them. Does that ever feel true for you?",
+    "topic": "avoidance",
+    "difficulty": 3,
+    "follow_up_purpose": "Assess emotional numbing and interpersonal detachment.",
+    "safety_classification": "sensitive",
+    "enabled": true
+  },
+  {
+    "question_id": "Q_HYP_01",
+    "text": "Do you often feel on edge, irritable, or jumpy, even when there is no clear reason to be?",
+    "topic": "hyperarousal",
+    "difficulty": 2,
+    "follow_up_purpose": "Assess physiological hypervigilance and irritability.",
+    "safety_classification": "standard",
+    "enabled": true
+  },
+  {
+    "question_id": "Q_HYP_02",
+    "text": "How easily do you find it to concentrate on tasks or conversations during the day?",
+    "topic": "hyperarousal",
+    "difficulty": 2,
+    "follow_up_purpose": "Evaluate attentional disruption and cognitive strain.",
+    "safety_classification": "standard",
+    "enabled": true
+  },
+  {
+    "question_id": "Q_SUP_01",
+    "text": "When things feel overwhelming, is there someone in your life you feel comfortable reaching out to?",
+    "topic": "support_network",
+    "difficulty": 1,
+    "follow_up_purpose": "Map social support network and protective factors.",
+    "safety_classification": "standard",
+    "enabled": true
+  },
+  {
+    "question_id": "Q_SUP_02",
+    "text": "How supported do you feel by your friends, family, or colleagues recently?",
+    "topic": "support_network",
+    "difficulty": 2,
+    "follow_up_purpose": "Gauge relational quality and perceived isolation.",
+    "safety_classification": "standard",
+    "enabled": true
+  },
+  {
+    "question_id": "Q_MOD_01",
+    "text": "Over the past couple of weeks, how would you describe your overall mood and energy level?",
+    "topic": "mood_affect",
+    "difficulty": 1,
+    "follow_up_purpose": "Assess depressive affect, energy levels, and psychomotor vitality.",
+    "safety_classification": "standard",
+    "enabled": true
+  },
+  {
+    "question_id": "Q_MOD_02",
+    "text": "Have you been finding enjoyment in the activities or hobbies that you normally look forward to?",
+    "topic": "mood_affect",
+    "difficulty": 2,
+    "follow_up_purpose": "Quantify anhedonia and blunted positive affect.",
+    "safety_classification": "standard",
+    "enabled": true
+  },
+  {
+    "question_id": "Q_COP_01",
+    "text": "What are some ways or habits that have been helping you manage during stressful moments?",
+    "topic": "coping",
+    "difficulty": 1,
+    "follow_up_purpose": "Identify adaptive resilience mechanisms and positive regulation.",
+    "safety_classification": "standard",
+    "enabled": true
+  }
+]

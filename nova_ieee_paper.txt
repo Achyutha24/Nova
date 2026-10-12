@@ -1,0 +1,808 @@
+
+Nova: A Multimodal Embodied Virtual Therapist for Objective PTSD and Anxiety Assessment via Adaptive Reinforcement-Learning-Based Questioning
+1st Author Name
+Department of Computer Science and Engineering
+Name of Institution/University
+City, Country
+email@institution.edu
+
+Abstract—Existing conversational mental-health agents such as Woebot, Tess, and Replika rely largely on text-based dialogue and scripted or rule-based logic, while embodied research systems such as SimSensei/Ellie fuse limited perceptual channels for semi-structured interviewing. This paper presents Nova, a research platform for objective, multimodal assessment support for post-traumatic stress disorder (PTSD) and anxiety, built around four design principles: (i) fusion of involuntary, largely unscriptable biomarkers — facial behaviour, ocular/gaze behaviour, vocal acoustics, speech-derived text, and optionally camera-based remote photoplethysmography (rPPG) — through a cross-modal Transformer; (ii) reinforcement-learning (RL)-based adaptive selection of the next interview question from a fixed, clinically reviewed question bank, rather than adaptation of communication style alone; (iii) an embodied Unity virtual human interviewer that removes the need for typed input; and (iv) a researcher-facing dashboard that stores timestamped multimodal evidence and supports longitudinal comparison across sessions. We describe the complete system architecture, the training and evaluation methodology intended for the DAIC-WOZ/E-DAIC benchmark, the RL environment formulation, and a structured comparison against nine existing systems and literature reviews. The system is positioned explicitly as a research-assessment tool and not as a diagnostic or clinical-therapy product.
+Keywords—multimodal fusion; cross-modal Transformer; reinforcement learning; adaptive questioning; PTSD assessment; anxiety assessment; embodied conversational agent; facial and ocular biomarkers; DAIC-WOZ; affective computing.
+I. Introduction
+Depression, anxiety, and PTSD are frequently under-diagnosed because clinical assessment depends on self-report and on a clinician's subjective interpretation of a limited, time-constrained interview. A growing body of conversational-agent research has attempted to reduce this gap, ranging from purely text-based chatbots that deliver cognitive behavioural therapy (CBT) content, to embodied virtual interviewers that couple dialogue with perceptual sensing. However, as summarised in Section II, most deployed systems either restrict themselves to a single modality (typically text), or use perceptual sensing mainly to drive scripted or semi-structured dialogue rather than to formally fuse modalities and adapt the interview itself.
+This paper describes a research platform, referred to throughout by the name of its embodied avatar, Nova, that targets three specific gaps identified in the literature survey: (1) the lack of a unified cross-modal fusion architecture that combines facial, ocular, vocal, linguistic and (optionally) physiological signals; (2) the lack of reinforcement-learning-driven adaptive question selection for assessment purposes, as opposed to adaptive communication style; and (3) the lack of a researcher-facing environment that links every question and response to timestamped multimodal evidence and supports longitudinal analysis across repeated sessions.
+The remainder of this paper is organised as follows. Section II surveys nine related systems and reviews. Section III compares Nova against these systems feature-by-feature. Section IV presents the proposed system architecture and its component responsibilities. Section V gives a detailed comparison against the closest related system, SimSensei/Ellie. Section VI summarises the key differences between Nova and prior systems. Section VII describes the methodology and algorithms used in each layer of Nova, including the reinforcement-learning formulation. Section VIII outlines the staged implementation and integration plan. Section IX describes the evaluation protocol. Section X discusses limitations and ethical safeguards, and Section XI concludes the paper.
+II. Literature Survey
+Table I summarises nine representative systems and reviews spanning text-based conversational agents, embodied interview systems, companionship-oriented agents, and reinforcement-learning-based adaptive dialogue, together with the methodology, algorithms, and techniques reported for each, and how each relates to the system proposed in this paper.
+Woebot [1] uses decision-tree logic and natural-language processing to deliver CBT and mood check-ins for depression and anxiety support, validated through a two-week randomised controlled trial; it remains text-only. Tess [2] combines emotion-recognition algorithms with machine learning to deliver scripted interventions, risk assessment, and crisis alerts at scale, but does not fuse visual or physiological modalities. SimSensei/Ellie [3] is the closest prior system to Nova: it is a semi-structured virtual-human interview system that perceives facial expressions, gaze, voice tone, and other non-verbal behaviour to support objective assessment of psychological distress indicators; Section V compares it against Nova in detail. Replika [4] is a companionship-oriented agent studied through qualitative interviews, focused on self-disclosure, trust and human–AI relationship formation rather than clinical assessment. Golubović et al. [5] report an experimental survey on how virtual-human appearance affects likability and trust, without an underlying therapeutic algorithm; this motivates Nova's own embodied-avatar design choices. Two systematic reviews — Li et al. [6] and Hang et al. [7] — synthesise evidence on the effectiveness of AI conversational agents and highlight multimodal fusion and personalisation as an important future direction, which this paper operationalises directly. A further review of AI chatbots [8] surveys technical and ethical challenges, including safety matrices for CBT, DBT and motivational-interviewing content; Nova addresses safety through a predefined, reviewed question bank together with RL-level constraints rather than free-form generation. Finally, Tamantini et al. [9] propose an adaptive-interaction-style framework that uses reinforcement learning (Thompson Sampling) and prompted language generation to modulate communication style based on multimodal emotion recognition; this paper adapts the reinforcement-learning concept from [9] but redefines the action space as assessment-question selection rather than communication style (see Sections VII and V.B for a structured comparison).
+
+
+Table I.  Literature Survey – Methodology, Algorithms and Techniques
+
+
+
+#
+
+Research / System
+
+Methodology Used
+
+Algorithms / Models
+
+Techniques / Features
+
+Main Focus
+
+Comparison with Our System
+
+
+1
+
+Woebot (Fitzpatrick et al.)
+
+Randomized controlled trial (2-week intervention)
+
+Decision-tree based logic, NLP
+
+CBT, psychoeducation, mood check-ins, conversational interaction
+
+Depression & anxiety support
+
+Text-based vs. our multimodal + RL system
+
+
+2
+
+Tess (Joerin et al.)
+
+Implementation & deployment in real-world setting
+
+Emotion algorithms + machine learning
+
+Emotion recognition, scripted interventions, risk assessment, crisis alerts
+
+Scalable emotional support
+
+Adds emotion awareness; our system adds multimodal fusion + RL + embodied agent
+
+
+3
+
+SimSensei / Ellie
+
+Semi-structured interview system
+
+Question selection, audio-visual perception, dialogue management
+
+Facial expressions, gaze, voice tone, non-verbal behaviour, gestures
+
+Objective assessment of psychological distress
+
+Closest to our work, extended with Transformer fusion and RL-based adaptive questioning
+
+
+4
+
+Replika (Skjuve et al.)
+
+Qualitative interviews (n = 18)
+
+Not the main focus
+
+Social interaction, self-disclosure, trust, companionship
+
+Human–AI relationship & companionship
+
+Companionship-focused; our system is research-oriented assessment
+
+
+5
+
+Virtual Therapist Appearance (Golubović et al.)
+
+Experimental survey
+
+No therapeutic AI algorithm
+
+Virtual human appearance, likability, trust
+
+Effect of avatar appearance on user perception
+
+Supports our avatar design; we add AI assessment + adaptive interaction
+
+
+6
+
+Li et al. (Systematic Review)
+
+Systematic review & meta-analysis
+
+Rule-based, NLP, ML, deep learning, generative AI
+
+CBT, personalization, multimodal agents
+
+Evidence for effectiveness of AI conversational agents
+
+Highlights multimodal as key direction; our system operationalizes it
+
+
+7
+
+Hang et al. (Systematic Review)
+
+Systematic review & meta-analysis
+
+Analysis of 16 RCTs
+
+AI conversational interventions
+
+Effectiveness among young people
+
+Evaluates existing systems; we add objective biomarker assessment
+
+
+8
+
+AI Chatbots (Opportunities & Challenges)
+
+Literature review & comparison
+
+Rule-based, NLP, generative models
+
+CBT, DBT, motivational interviewing, mindfulness, safety matrix
+
+Technical & ethical challenges
+
+We address safety via predefined questions and RL constraints
+
+
+9
+
+Adaptive Interaction Style (Tamantini et al.)
+
+Adaptive interaction framework
+
+Reinforcement Learning + Thompson Sampling + LLM
+
+Multimodal emotion recognition, prompt engineering, sentiment analysis
+
+Adaptive communication style
+
+Inspires our RL module; we use RL for question selection
+
+III. Feature Comparison with Existing Systems
+Table II compares Nova against five representative prior systems (Woebot, Tess, SimSensei, Replika, and the RL + LLM style-adaptation system of [9]) across seventeen features spanning input modalities, fusion, adaptivity, embodiment, and research-output capabilities. Nova is the only system in the comparison that combines full multimodal fusion (including Transformer-based cross-modal fusion), reinforcement-learning-based adaptive questioning, a predefined safe question bank, an embodied virtual human, a researcher dashboard with timestamped evidence, and explicit clinical-safety constraints simultaneously. Existing systems each provide a subset of these capabilities: SimSensei is closest on perceptual richness but does not use reinforcement learning; the RL + LLM system of [9] uses reinforcement learning but for style modulation and lacks psychological assessment and predefined safe questions; Woebot and Tess provide safety constraints and predefined content but no visual/ocular sensing or fusion.
+
+
+Table II.  Feature Comparison of Existing Systems vs. Our System
+
+
+
+Feature / Technique
+
+Woebot
+
+Tess
+
+SimSensei
+
+Replika
+
+RL + LLM Paper
+
+Our System (Nova)
+
+
+Text conversation
+
+✓
+
+✓
+
+✓
+
+✓
+
+✓
+
+✓
+
+
+Speech input
+
+✗
+
+✓
+
+✓
+
+Possible
+
+✓
+
+✓
+
+
+Facial analysis
+
+✗
+
+✗
+
+✓
+
+✗
+
+✓
+
+✓
+
+
+Eye / gaze analysis
+
+✗
+
+✗
+
+✓
+
+✗
+
+✓
+
+✓
+
+
+Voice / acoustic analysis
+
+✗
+
+✓
+
+✓
+
+✗
+
+✓
+
+✓
+
+
+Speech-to-text
+
+✓
+
+✓
+
+✓
+
+✓
+
+✓
+
+✓
+
+
+Psychological assessment
+
+✓
+
+✓
+
+✓
+
+✗
+
+✗
+
+✓
+
+
+Multimodal fusion
+
+✗
+
+Limited
+
+✓
+
+✗
+
+✓
+
+✓
+
+
+Transformer fusion
+
+✗
+
+✗
+
+Not central
+
+✗
+
+✗
+
+✓
+
+
+Reinforcement learning
+
+✗
+
+✗
+
+✗
+
+✗
+
+✓
+
+✓
+
+
+Adaptive questioning
+
+Limited
+
+Scenario-based
+
+Semi-structured
+
+✗
+
+Style-based
+
+✓
+
+
+Predefined safe questions
+
+✓
+
+✓
+
+Semi-structured
+
+✗
+
+✗
+
+✓
+
+
+Embodied virtual human
+
+✗
+
+✗
+
+✓
+
+Avatar/companion
+
+✗
+
+✓
+
+
+Researcher dashboard
+
+✗
+
+Limited
+
+✓
+
+✗
+
+✗
+
+✓
+
+
+Timestamped evidence
+
+✗
+
+Limited
+
+✓
+
+✗
+
+✗
+
+✓
+
+
+Longitudinal analysis
+
+Limited
+
+✓
+
+✓
+
+✓
+
+✓
+
+✓
+
+
+Biomarker-oriented analysis
+
+✗
+
+Limited
+
+✓
+
+✗
+
+✗
+
+✓
+
+
+Clinical safety constraints
+
+✓
+
+✓
+
+Research-oriented
+
+Limited
+
+Needs safeguards
+
+✓
+
+IV. Proposed System Architecture
+A. Overview
+Nova is organised as a layered pipeline. A participant interacts naturally, by speaking and looking at the embodied virtual human rendered in Unity; no typed input is required. The Unity front end streams camera and microphone data, together with the current conversation state, to a Python backend/orchestrator. The backend runs speech-to-text, voice/acoustic processing, face analysis, eye/gaze analysis, and, where validated, camera-based rPPG. Each modality is converted into a compatible encoded representation and passed to a cross-modal Transformer fusion module, which produces (a) an assessment-oriented output, (b) a fused multimodal state for reinforcement learning, and (c) timestamped evidence for the research dashboard. A reinforcement-learning adaptive-question-selection policy consumes the fused state and dialogue history and selects the next question from a predefined, safe question bank; Unity then renders this question through the virtual human, and the cycle repeats.
+B. Component Responsibilities
+The camera supplies frames used for face, gaze, and (optionally) rPPG extraction; the microphone supplies audio used both for acoustic/voice feature extraction and for speech-to-text transcription. The resulting text, voice, face, gaze, and physiological features are each passed through a modality-specific encoder before fusion. The fusion Transformer is the main multimodal research model, and its output state feeds the RL policy, which is restricted to selecting from a finite, reviewed action space rather than generating unconstrained questions. The Python backend performs runtime orchestration between Unity and the trained models via an HTTP/WebSocket API, while the research dashboard consumes session logs to present timelines, modality traces, and longitudinal comparisons for research analysis — it is explicitly a research dashboard rather than a clinical or therapist-facing dashboard.
+
+Table III.  Methodology / Algorithms Used in Our Project
+
+
+
+Layer / Module
+
+Technique / Algorithm
+
+Purpose
+
+
+Speech (ASR)
+
+Speech-to-Text (e.g., Whisper)
+
+Convert participant speech into text
+
+
+Text (NLP)
+
+Text embeddings / NLP (e.g., BERT)
+
+Extract information from what the participant says
+
+
+Voice / Audio
+
+MFCC + acoustic features / pretrained speech models
+
+Analyse how the participant speaks
+
+
+Face Analysis
+
+Facial landmarks / Action Units (e.g., OpenFace, MediaPipe)
+
+Capture facial behavioural information
+
+
+Eyes / Gaze
+
+Gaze, blink, pupil features (e.g., MediaPipe Iris, GazeML)
+
+Capture ocular behavioural signals
+
+
+Physiological (Optional)
+
+rPPG → HR/HRV estimation
+
+Contactless physiological signal estimation
+
+
+Unimodal ML
+
+Classical ML / neural task heads
+
+Establish individual modality baselines
+
+
+Multimodal AI (Fusion)
+
+Cross-modal Transformer
+
+Learn relationships between all modalities
+
+
+Adaptive Interaction (RL)
+
+Reinforcement Learning (e.g., PPO / Thompson Sampling)
+
+Select next question based on multimodal state
+
+
+RL Action Space
+
+Predefined safe question bank
+
+Prevent unrestricted question generation
+
+
+RL Reward Function
+
+Information gain + topic coverage + engagement − penalties (repetition/irrelevance/safety)
+
+Guide question selection
+
+
+Embodied Interaction
+
+Unity virtual human (e.g., Nova)
+
+Provide conversational interface
+
+
+Backend
+
+Python API / service (FastAPI)
+
+Connect ML models with Unity
+
+
+Research Output
+
+Dashboard + session timeline
+
+Display multimodal traces, questions, responses
+
+V. Detailed Comparison with SimSensei/Ellie
+Because SimSensei/Ellie is architecturally the closest prior system to Nova, Table IV presents a fifteen-aspect side-by-side comparison. Both systems use an embodied virtual-human interface and perceive facial expressions, gaze, blinking, and voice characteristics. The principal differences are: (1) Nova replaces SimSensei's semi-structured, algorithmic question progression with reinforcement-learning-based adaptive questioning that still draws only from a safe, predefined question bank; (2) Nova adds an explicit cross-modal Transformer fusion architecture on top of modality-specific encoders, rather than a general multimodal-perception description; (3) Nova adds an optional contactless physiological channel (rPPG-derived heart rate/HRV) that is not specified in SimSensei; and (4) Nova's research outputs extend behavioural information to timestamped multimodal evidence, a full research dashboard, and longitudinal comparison across sessions.
+
+
+Table IV.  Detailed Comparison – SimSensei/Ellie vs. Our System
+
+
+
+Aspect
+
+SimSensei / Ellie
+
+Our System – Nova
+
+
+Interface
+
+Virtual human (Ellie)
+
+Unity embodied virtual human (Nova)
+
+
+Interview type
+
+Semi-structured
+
+Adaptive questioning (RL)
+
+
+Modalities used
+
+Speech, face, gaze, gestures, text
+
+Speech, face, eyes, voice, text, (rPPG optional)
+
+
+Fusion architecture
+
+Multimodal perception (as described)
+
+Explicit modality encoders + cross-modal Transformer
+
+
+Reinforcement learning
+
+Not used
+
+Used for question selection
+
+
+Question selection
+
+Algorithmic / semi-structured
+
+RL selects from safe predefined question bank
+
+
+Assessment target
+
+Psychological distress indicators
+
+Multimodal PTSD/anxiety research assessment
+
+
+Gestures & non-verbal behaviour
+
+Yes (facial expressions, gaze, gestures, blinking, voice tone, pauses)
+
+Yes (facial expressions, gaze, blink, head movement via avatar)
+
+
+Speech & language analysis
+
+Yes
+
+Yes (ASR + NLP embeddings)
+
+
+Ocular analysis
+
+Yes (gaze, blinking)
+
+Yes (gaze, blink, pupil features)
+
+
+Voice / acoustic analysis
+
+Yes (voice characteristics)
+
+Yes (MFCC + acoustic features / pretrained models)
+
+
+Physiological analysis
+
+Not specified
+
+Yes (rPPG → HR/HRV, optional)
+
+
+Longitudinal analysis
+
+Supported (previous information)
+
+Yes (research dashboard + longitudinal comparison)
+
+
+Research outputs
+
+Behavioural information
+
+Timestamped multimodal evidence + dashboard + analysis
+
+
+Main focus
+
+Automatic assessment of psychological distress
+
+Multimodal assessment + adaptive interaction for mental-health research
+
+VI. Key Differences from Previous Systems
+Table V generalises the comparison across nine aspects, contrasting a synthesis of previous systems with Nova. Previous systems typically target conversation delivery, CBT content delivery, companionship, or single-modality signal analysis, using text with at most limited audio/visual input, rarely-used or limited fusion, scripted or rule-based adaptivity, and text-based or simple-avatar embodiment; assessment, where present, relies on questionnaires such as PHQ-9 or GAD-7, or text-based analysis, with limited real-time adaptation and variable safety control. Nova instead targets multimodal assessment together with adaptive questioning, uses face, eye, voice and text data (with optional rPPG), a cross-modal Transformer fusion model, reinforcement-learning-based real-time adaptation, an embodied Unity virtual human, predefined safe questions with explicit safety constraints and risk handling, and a research output comprising a dashboard, session timeline, multimodal traces, and longitudinal analysis.
+
+
+Table V.  Our System vs. Previous Systems – Key Differences
+
+
+
+Aspect
+
+Previous Systems (General)
+
+Our System (Nova)
+
+
+Main focus
+
+Conversation, CBT delivery, companionship, or single-modality signals
+
+Multimodal assessment + adaptive questioning
+
+
+Data used
+
+Mostly text; some use limited audio/visual
+
+Face + eyes + voice + speech-to-text (+ rPPG optional)
+
+
+Fusion model
+
+Rarely used or limited
+
+Cross-modal Transformer
+
+
+Adaptive interaction
+
+Scripted, rule-based or style-based
+
+Reinforcement learning (question selection)
+
+
+Embodiment
+
+Text-based or simple avatar (few systems)
+
+Unity embodied virtual human (Nova)
+
+
+Psychological assessment
+
+Questionnaires (e.g., PHQ-9, GAD-7) or text-based analysis
+
+Multimodal biomarker-based assessment (face, eye, voice, text, optional rPPG)
+
+
+Real-time adaptation
+
+Limited or not available
+
+Dynamic question selection based on multimodal state
+
+
+Safety control
+
+Varies; often limited
+
+Predefined safe questions + safety constraints + risk handling
+
+
+Research output
+
+Limited (basic outcomes)
+
+Research dashboard + session timeline + multimodal traces + longitudinal analysis
+
+VII. Methodology and Algorithms
+Table III lists the technique or algorithm used in each layer/module of Nova and its purpose. The following subsections summarise the most important layers.
+A. Perceptual Front End
+Speech is transcribed with a pretrained automatic speech-recognition (ASR) model (e.g., Whisper) to obtain a timestamped transcript, from which text embeddings (e.g., BERT-family encoders) are derived; the participant is never required to type. Acoustic features (MFCCs and additional descriptors such as pitch, jitter, shimmer and HNR, optionally supplemented with pretrained speech representations such as Wav2Vec 2.0) characterise how the participant speaks. Facial behaviour is captured using validated facial-landmark/action-unit pipelines (e.g., OpenFace or MediaPipe), and ocular behaviour — gaze direction, blink rate, and pupil features — is extracted from the same or a dedicated pipeline (e.g., MediaPipe Iris, GazeML), and is kept as a distinct modality even where derived from the same video stream. A contactless remote-photoplethysmography (rPPG) channel for heart-rate/HRV estimation is treated as optional and experimental: it is only included in the fusion model after its signal quality and failure rate have been validated on a sample of recordings, and is never assumed to be a ground-truth-grade physiological measurement.
+B. Multimodal Fusion
+Each modality is first passed through a modality-specific unimodal baseline (classical machine learning or a small neural task head) to establish an individual performance reference. The modalities are then aligned by participant and by conversational turn and passed into a cross-modal Transformer, which learns attention-based relationships between modalities rather than simple concatenation. A missing-modality policy and corresponding modality masks are defined prior to training so that the system degrades gracefully — rather than fabricating values — when a sensor is unavailable or of low quality.
+C. Reinforcement-Learning Adaptive Questioning
+The RL module is deliberately restricted to selecting the next question from a fixed, reviewed question bank; it is never permitted to generate unconstrained clinical questions. The environment is formulated as follows. The state is the fused multimodal representation together with the questions already asked, the topics already covered, and the current turn context. The action is the selection of one predefined question or question category. The transition is the participant's response, which yields a new multimodal/text state. The reward combines information gain, topic/symptom coverage, and engagement/response quality, with penalties for repetition, irrelevance, or safety violations:
+R = w1·InfoGain + w2·TopicCoverage + w3·Engagement − w4·Repetition − w5·Irrelevance − w6·SafetyViolation      (1)
+An episode corresponds to one complete research interview session, and the policy is trained (e.g., with PPO or Thompson Sampling) to learn which action is most useful in each state. This formulation is inspired by the adaptive-interaction-style architecture of Tamantini et al. [9], which uses a scalar valence-based reward and Thompson Sampling to modulate communication style; Nova redefines both the action space (assessment-question selection rather than communication style) and the reward (information gain and topic coverage rather than affective valence change), since a more positive facial or vocal response is not automatically a better assessment outcome.
+D. Dataset, Labels, and Evaluation Metrics
+The intended benchmark for offline model development is the DAIC-WOZ/Extended-DAIC (E-DAIC) corpus [10]–[12], obtained through the official access process, which provides audio, video, transcripts, questionnaire responses, and facial-feature data collected for the study of depression, anxiety and PTSD-related psychological distress. Because the commonly used AVEC 2017 DAIC-WOZ depression task uses PHQ-8-based labels, the exact target variable, task type (classification or regression), unit of prediction, positive-class definition, and train/development/test split must be documented before any model is described as an anxiety or PTSD classifier, and participant-level splitting is enforced throughout to prevent leakage. Primary evaluation metrics are AUROC and F1, together with precision, recall, accuracy and calibration measures where appropriate; the RL module is evaluated separately on information gain per turn, topic coverage, turns-to-coverage threshold, engagement proxies, cumulative reward, repetition rate and safety-violation rate, since AUROC/F1 do not characterise a question-selection policy.
+VIII. Implementation Plan
+The system is implemented as a staged research pipeline rather than as a single monolithic build, following the order: dataset acquisition and audit; exact target/label definition; participant-level splitting; unimodal baselines for voice, text, face, gaze and (if validated) rPPG; multimodal fusion and ablation (Face; Face+Voice; Face+Voice+Gaze; Face+Voice+Gaze+Text; and, only if quality checks pass, the full modality set including rPPG); early-fusion versus late-fusion versus cross-modal-Transformer comparison; construction of the RL environment, question bank and topic-coverage map; RL training and evaluation against a fixed-question baseline; construction of the research dashboard; exposure of the trained models through a FastAPI-based Python service; Unity integration; and a final end-to-end demonstration, followed by an ethics-approved human pilot only if institutional approval is obtained.
+Unity integration itself follows an incremental ladder — from a scene in which the avatar speaks a pre-recorded line, through dummy API calls, live speech-to-text, single-modality inference, fused-model inference, and finally RL-selected questioning with full session logging and dashboard visualisation — so that integration defects are isolated one layer at a time rather than debugged inside a fully real-time system. Every turn is logged with a timestamp, session identifier, model version, selected action, data-quality flags, and outputs, and defined fallback behaviour is used whenever a sensor, model, or backend call fails (for example, masking a missing modality rather than fabricating a value, or selecting a safe predefined fallback question under RL uncertainty).
+IX. Evaluation Protocol
+Evaluation is separated into three tiers. The offline machine-learning benchmark trains and evaluates unimodal baselines and the fusion model once, on a locked held-out partition, reporting AUROC, F1, precision, recall, accuracy and, where feasible, confidence intervals or cross-fold variance. The RL simulation/offline experiment compares the trained adaptive-questioning policy against a fixed-question-sequence baseline under the same question bank and question budget, across multiple random seeds, on information gained per turn, topic/symptom coverage, turns to reach a coverage threshold, an engagement proxy, cumulative reward, question-repetition rate, and safety-violation rate. A human pilot, conducted only after institutional ethics approval and informed consent, uses pseudonymous identifiers, records system failures and sensor quality, analyses aggregate rather than individual results, and does not support any automated diagnostic claim. Published results from other systems are only reported as direct numerical comparisons when the dataset, label definition, split and metric are sufficiently aligned; otherwise they are reported as contextual background only.
+X. Discussion and Limitations
+Nova is explicitly framed as a research-assessment platform and not as a diagnostic or treatment system: computational features such as gaze avoidance, vocal instability, or an rPPG-derived heart-rate estimate are reported as evidence and quality-flagged model output, not as proof of a clinical condition. The reinforcement-learning component is restricted to a finite, reviewed question bank precisely to avoid unconstrained clinical questioning, and the researcher dashboard is deliberately distinguished from a clinical or therapist-facing dashboard. Key limitations include the dependence of rPPG on video quality and lighting, the general difficulty of applying benchmark performance from one dataset or label definition directly to another, and the requirement that any human-participant study obtain institutional ethics approval before mental-health-related data is collected.
+XI. Conclusion and Future Work
+This paper presented Nova, a multimodal, embodied research platform for objective PTSD and anxiety assessment support that combines cross-modal Transformer fusion of facial, ocular, vocal, linguistic and optional physiological signals with reinforcement-learning-based adaptive question selection from a safe, predefined question bank, and a researcher-facing dashboard with timestamped, longitudinal multimodal evidence. Compared against nine representative systems and reviews, Nova is distinguished by combining full multimodal fusion, adaptive questioning driven by reinforcement learning rather than scripted logic, and detailed research-output tooling. Future work includes completing the DAIC-WOZ/E-DAIC benchmark evaluation and ablation study, validating rPPG feasibility on the target hardware, extending the RL reward with additional safety constraints, and — subject to institutional ethics approval — conducting a small human-participant pilot study to assess engagement, usability and system reliability under realistic conditions.
+References
+[1] K. K. Fitzpatrick, A. Darcy, and M. Vierhile, "Delivering cognitive behavior therapy to young adults with symptoms of depression and anxiety using a fully automated conversational agent (Woebot): a randomized controlled trial," JMIR Mental Health, 2017.
+[2] A. Joerin, M. Rauws, et al., "Psychological artificial intelligence service, Tess: Delivering on-demand support to patients and their caregivers," as reported in the associated literature survey.
+[3] D. DeVault et al., "SimSensei Kiosk: A virtual human interviewer for healthcare decision support," in Proc. Int. Conf. Autonomous Agents and Multi-Agent Systems (AAMAS), 2014.
+[4] M. Skjuve, A. Følstad, K. I. Fostervold, and P. B. Brandtzaeg, "My chatbot companion — a study of human–chatbot relationships," Int. J. Human-Computer Studies, 2021.
+[5] Golubović et al., "Effect of virtual human appearance on user perception: an experimental survey," as reported in the associated literature survey.
+[6] Li et al., "Effectiveness of AI-based conversational agents for mental health support: a systematic review and meta-analysis," as reported in the associated literature survey.
+[7] Hang et al., "Effectiveness of AI conversational agents among young people: a systematic review and meta-analysis of randomized controlled trials," as reported in the associated literature survey.
+[8] "Opportunities and challenges of AI chatbots in mental health: a literature review," as reported in the associated literature survey.
+[9] R. Tamantini et al., "Adaptive interaction style modulation via reinforcement learning and prompted language generation," in Proc. Workshop on Social Robotics for Human-Centered Assistive and Rehabilitation AI (ICSR 2025), CEUR-WS Vol. 4067, 2025.
+[10] University of Southern California Institute for Creative Technologies, "DAIC-WOZ database," [Online]. Available: https://dcapswoz.ict.usc.edu/
+[11] University of Southern California Institute for Creative Technologies, "Extended DAIC (E-DAIC) database," [Online]. Available: https://dcapswoz.ict.usc.edu/extended-daic-database-download/
+[12] "DAIC-WOZ AVEC 2017 depression sub-challenge documentation," [Online]. Available: https://dcapswoz.ict.usc.edu/wwwdaicwoz/DAICWOZDepression_Documentation_AVEC2017.pdf

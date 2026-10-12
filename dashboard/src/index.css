@@ -1,0 +1,231 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: light;
+  --retro-teal: #064D49;
+  --retro-teal-dark: #073E3B;
+  --retro-teal-light: #17675F;
+  --retro-cream: #E8DFCB;
+  --retro-cream-light: #F5EFE1;
+  --retro-cream-dark: #D4CBBA;
+  --retro-border-dark: #453E32;
+  --retro-border-shadow: #2A2720;
+  --retro-border-light: #FFFDF6;
+  --retro-text: #211F1A;
+  --retro-text-muted: #686253;
+  --retro-accent-blue: #375F85;
+  --retro-accent-green: #3D8B5D;
+  --retro-accent-red: #C94A4A;
+  --retro-accent-orange: #D97736;
+  --retro-accent-yellow: #D9A736;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  background-color: #17382c;
+  color: #211F1A;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom Scrollbars */
+::-webkit-scrollbar {
+  width: 14px;
+  height: 14px;
+  background-color: #D4CBBA;
+}
+
+::-webkit-scrollbar-track {
+  background-color: #E8DFCB;
+  border-left: 1px solid #453E32;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #E8DFCB;
+  border-top: 2px solid #FFFDF6;
+  border-left: 2px solid #FFFDF6;
+  border-right: 2px solid #453E32;
+  border-bottom: 2px solid #453E32;
+  box-shadow: inset 1px 1px 0px #FFF, inset -1px -1px 0px #8C8472;
+}
+
+::-webkit-scrollbar-thumb:active {
+  border-top: 2px solid #453E32;
+  border-left: 2px solid #453E32;
+  border-right: 2px solid #FFFDF6;
+  border-bottom: 2px solid #FFFDF6;
+}
+
+/* Classic Retro Bevels */
+.retro-window {
+  background-color: var(--retro-cream);
+  border-top: 2px solid #FFFDF6;
+  border-left: 2px solid #FFFDF6;
+  border-right: 2px solid #453E32;
+  border-bottom: 2px solid #453E32;
+  box-shadow: inset 1px 1px 0px #FFFFFF, inset -1px -1px 0px #8C8472, 2px 3px 6px rgba(0, 0, 0, 0.4);
+}
+
+.retro-titlebar {
+  background: linear-gradient(90deg, #073E3B 0%, #0B534E 60%, #106660 100%);
+  color: #FFFFFF;
+  border-top: 1px solid #1D7871;
+  border-left: 1px solid #1D7871;
+  border-right: 1px solid #032422;
+  border-bottom: 1px solid #032422;
+}
+
+.retro-titlebar-inactive {
+  background: linear-gradient(90deg, #6C7472 0%, #858D8B 100%);
+  color: #D4D8D7;
+}
+
+.retro-ctrl-btn {
+  background-color: #E8DFCB;
+  color: #211F1A;
+  border-top: 1.5px solid #FFFDF6;
+  border-left: 1.5px solid #FFFDF6;
+  border-right: 1.5px solid #453E32;
+  border-bottom: 1.5px solid #453E32;
+  box-shadow: inset 0.5px 0.5px 0px #FFF, inset -0.5px -0.5px 0px #8C8472;
+  width: 17px;
+  height: 15px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: monospace;
+  font-weight: 900;
+  font-size: 10px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.retro-ctrl-btn:active {
+  border-top: 1.5px solid #453E32;
+  border-left: 1.5px solid #453E32;
+  border-right: 1.5px solid #FFFDF6;
+  border-bottom: 1.5px solid #FFFDF6;
+  box-shadow: inset 1px 1px 0px #6E6656;
+}
+
+.retro-inset {
+  border-top: 2px solid #453E32;
+  border-left: 2px solid #453E32;
+  border-right: 2px solid #FFFDF6;
+  border-bottom: 2px solid #FFFDF6;
+  box-shadow: inset 1px 1px 0px #6E6656, inset -1px -1px 0px #FFFDF6;
+}
+
+.retro-inset-shallow {
+  border-top: 1.5px solid #7D7463;
+  border-left: 1.5px solid #7D7463;
+  border-right: 1.5px solid #FFFDF6;
+  border-bottom: 1.5px solid #FFFDF6;
+  box-shadow: inset 1px 1px 0px #A19885, inset -1px -1px 0px #FFFDF6;
+}
+
+.retro-raised {
+  border-top: 2px solid #FFFDF6;
+  border-left: 2px solid #FFFDF6;
+  border-right: 2px solid #453E32;
+  border-bottom: 2px solid #453E32;
+  box-shadow: inset 1px 1px 0px #FFFFFF, inset -1px -1px 0px #8C8472;
+}
+
+.retro-button {
+  background-color: #E8DFCB;
+  color: #211F1A;
+  border-top: 2px solid #FFFDF6;
+  border-left: 2px solid #FFFDF6;
+  border-right: 2px solid #453E32;
+  border-bottom: 2px solid #453E32;
+  box-shadow: inset 1px 1px 0px #FFFFFF, inset -1px -1px 0px #8C8472;
+  cursor: pointer;
+  transition: none;
+}
+
+.retro-button:hover {
+  background-color: #EFE6D4;
+}
+
+.retro-button:active, .retro-button.active {
+  border-top: 2px solid #453E32;
+  border-left: 2px solid #453E32;
+  border-right: 2px solid #FFFDF6;
+  border-bottom: 2px solid #FFFDF6;
+  box-shadow: inset 1px 1px 0px #6E6656, inset -1px -1px 0px #FFFDF6;
+  background-color: #DFD5C0;
+}
+
+.retro-tab {
+  background-color: #D4CBBA;
+  color: #453E32;
+  border-top: 2px solid #FFFDF6;
+  border-left: 2px solid #FFFDF6;
+  border-right: 2px solid #453E32;
+  border-bottom: 2px solid #453E32;
+  box-shadow: inset 1px 1px 0px #FFF;
+  cursor: pointer;
+  font-size: 11px;
+  padding: 3px 10px;
+  position: relative;
+  top: 1px;
+}
+
+.retro-tab.active {
+  background-color: #E8DFCB;
+  color: #211F1A;
+  font-weight: 700;
+  border-bottom: 2px solid #E8DFCB;
+  z-index: 10;
+  top: 1px;
+}
+
+.retro-tab:hover:not(.active) {
+  background-color: #DFD5C2;
+}
+
+.retro-led {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  display: inline-block;
+  background: radial-gradient(circle at 3px 3px, #70FF70, #00A300 70%, #005000);
+  box-shadow: 0 0 5px #00FF00, inset 0 0 1px #FFF;
+  border: 1px solid #144D25;
+}
+
+.retro-led-amber {
+  background: radial-gradient(circle at 3px 3px, #FFDE70, #D98E00 70%, #854E00);
+  box-shadow: 0 0 5px #FFAE00;
+  border: 1px solid #5A3A00;
+}
+
+.retro-led-red {
+  background: radial-gradient(circle at 3px 3px, #FF7070, #D91000 70%, #750A00);
+  box-shadow: 0 0 5px #FF0000;
+  border: 1px solid #5A0A00;
+}
+
+/* Retro Progress Bar Container */
+.retro-progress-well {
+  background-color: #E8DFCB;
+  border-top: 1.5px solid #453E32;
+  border-left: 1.5px solid #453E32;
+  border-right: 1.5px solid #FFFDF6;
+  border-bottom: 1.5px solid #FFFDF6;
+  height: 14px;
+  position: relative;
+  overflow: hidden;
+}
+
+/* Classic Desktop Wallpaper */
+.retro-desktop-bg {
+  background-color: #17382c;
+  background-image: 
+    radial-gradient(circle at 50% 10%, #2a6148 0%, #17382c 60%, #0d211a 100%),
+    repeating-linear-gradient(45deg, transparent, transparent 10px, rgba(0,0,0,0.03) 10px, rgba(0,0,0,0.03) 20px);
+  min-height: 100vh;
+}
